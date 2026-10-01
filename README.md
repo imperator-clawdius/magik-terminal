@@ -43,8 +43,10 @@ codex --magik
 codex --magik --yolo
 ```
 
-`--magik` runs Codex in the current terminal tab, inheriting its working directory
-and streams without opening another tab or window. `--yolo` explicitly maps
+`--magik` opens a new Windows Terminal window with the full Magik profile,
+preserving your working directory. This works from legacy PowerShell, Command
+Prompt, and ordinary Terminal tabs. When already in a Magik tab, it runs there.
+`--yolo` explicitly maps
 to Codex's `--dangerously-bypass-approvals-and-sandbox`: no approval prompts or
 sandbox. It is never enabled by the theme on its own.
 
@@ -55,10 +57,21 @@ This also applies when opening the profile from the Terminal menu. Explicit
 
 Plain `codex` and automation commands pass through to your original Codex
 installation, preserving arguments, streams, and exit codes. Extra arguments
-such as `resume --last` are forwarded. The installed Codex syntax theme remains
-active; terminal effects (flames, frame, and wallpaper) use the current terminal
-profile. Select **Magik Terminal for Codex (By W1d0wm4k3r)** from the Terminal menu
-for those effects. The launcher does not switch profiles or alter other profiles.
+such as `resume --last` are forwarded. The installed Codex syntax theme, flames,
+frame, and saved wallpaper are provided by the Magik profile. You can also select
+**Magik Terminal for Codex (By W1d0wm4k3r)** from the Terminal menu. The launcher
+does not change other profiles or the system's default terminal host.
+
+Full effects require Windows Terminal; an already-open legacy console cannot
+render them. The automatic handoff handles this instead of failing when
+`WT_PROFILE_ID` is missing. `--yolo` does not grant Windows administrator rights;
+launch from an administrator shell when those rights are needed.
+
+**Launch issue / work in progress:** v0.3.1 kept Codex in the original window but
+did not provide the full Magik visuals outside its Terminal profile. v0.3.2
+restores automatic themed-window launching. We are working on improving the
+launch experience across console hosts; full effects in a legacy PowerShell
+window are not currently supported.
 
 To make every new Windows Terminal window launch the theme, re-run:
 

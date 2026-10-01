@@ -1,10 +1,13 @@
-"""Transparent Codex command wrapper; Magik runs in the current terminal."""
+"""Transparent Codex wrapper; --magik opens its themed terminal when needed."""
+import base64
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent
+GUID = '{89a85927-87d9-4b07-922a-3fc6a9f2dc61}'
 TITLE = 'Magik Terminal for Codex (By W1d0wm4k3r)'
 BATCH = {'exec', 'e', 'review', 'login', 'logout', 'mcp', 'mcp-server', 'plugin',
          'app-server', 'remote-control', 'app', 'completion', 'update', 'doctor',
@@ -23,7 +26,7 @@ def parse_args(args):
     return magik, flags + tail
 
 
-def command(args, native, *, interactive=True):
+def command(args, native, *, profile_id='', interactive=True, cwd=None, root=ROOT):
     magik, forwarded = parse_args(args)
     batch = not interactive or any(x in BATCH or x in {'-h', '--help', '-V', '--version'} for x in forwarded)
     if not magik or batch:
@@ -33,9 +36,14 @@ def command(args, native, *, interactive=True):
     flags = forwarded[:forwarded.index('--')] if '--' in forwarded else forwarded
     if '--no-daemon' not in flags and not any(x == '--remote' or x.startswith('--remote=') for x in flags):
         forwarded = ['--no-daemon'] + forwarded
-    # Inherit the launching console, working directory, and streams. Terminal
-    # appearance belongs to the host profile, not to a newly spawned tab.
-    return native + forwarded
+    if profile_id.lower() == GUID:
+        return native + forwarded
+    # Legacy console hosts cannot render the theme. A dedicated window also
+    # avoids routing this launch into an unrelated existing Terminal window.
+    payload = base64.b64encode(json.dumps(forwarded, ensure_ascii=False).encode('utf-8')).decode('ascii')
+    return ['wt.exe', '-w', 'new', 'new-tab', '-p', GUID, '-d', cwd or os.getcwd(),
+            'powershell.exe', '-NoLogo', '-NoExit', '-File', str(root / 'launch.ps1'),
+            '-EncodedArguments', payload]
 
 
 def main():
@@ -51,6 +59,7 @@ def main():
         return 1
     config = json.loads((ROOT / 'runtime.json').read_text(encoding='utf-8'))
     invocation = command(sys.argv[1:], config['native'],
+        profile_id=os.environ.get('WT_PROFILE_ID', ''), root=ROOT,
         interactive=sys.stdin.isatty() and sys.stdout.isatty())
     try:
         child = subprocess.Popen(invocation)
