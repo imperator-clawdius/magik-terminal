@@ -32,8 +32,18 @@ with tempfile.TemporaryDirectory(prefix='magik-ci-') as tmp:
     env.update(HOME=str(home), CODEX_HOME=str(home / '.codex'))
     native = home / 'native-sentinel'
     result = home / 'result.json'
-    native.write_text('#!' + sys.executable + '\nimport json, os, sys\nfrom pathlib import Path\n'
-                     + 'Path(' + repr(str(result)) + ').write_text(json.dumps({"args":sys.argv[1:],"profile":os.environ.get("MAGIK_PROFILE")}))\n')
+    hold = home / 'hold-open'
+    if not config_only:
+        # A Codex session stays open. Keep both inert sessions alive so this
+        # checks simultaneous independent instances without racing AppKit quit.
+        hold.touch()
+    native.write_text('#!' + sys.executable + '\nimport json, os, sys, time\nfrom pathlib import Path\n'
+                     + 'result = Path(' + repr(str(result)) + ')\n'
+                     + 'pending = result.with_suffix(".pending")\n'
+                     + 'pending.write_text(json.dumps({"args":sys.argv[1:],"profile":os.environ.get("MAGIK_PROFILE"),"pid":os.getpid()}))\n'
+                     + 'pending.replace(result)\n'
+                     + 'deadline = time.monotonic() + 60\n'
+                     + 'while Path(' + repr(str(hold)) + ').exists() and time.monotonic() < deadline:\n    time.sleep(.1)\n')
     native.chmod(0o755)
     print('Installing isolated Mac instance...', flush=True)
     subprocess.run([sys.executable, str(root / 'macos/install.py'), '--codex-executable', str(native), '--wallpaper', 'on'], env=env, check=True, timeout=45)
@@ -68,6 +78,7 @@ with tempfile.TemporaryDirectory(prefix='magik-ci-') as tmp:
         assert data['profile'] == str(installed), data
         print(('Direct' if config_only else 'Ghostty GUI') + ' native session executed exact argv:', args, flush=True)
     print('Checking wallpaper command...', flush=True)
+    hold.unlink(missing_ok=True)
     subprocess.run([str(home / '.local/bin/codex'), '--magik', '--wallpaper', 'off'], env=env, check=True, timeout=20)
     print('Uninstalling isolated instance...', flush=True)
     subprocess.run([sys.executable, str(root / 'macos/install.py'), '--uninstall'], env=env, check=True, timeout=20)
