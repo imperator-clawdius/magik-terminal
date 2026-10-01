@@ -5,7 +5,19 @@ param(
 $ErrorActionPreference = 'Stop'
 if ($EncodedArguments) {
     $json = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($EncodedArguments))
-    $CodexArguments = @(ConvertFrom-Json $json)
+    # Windows PowerShell 5.1 emits the JSON array as one pipeline object.
+    # Assign it first so string[] does not join multiple flags into one string.
+    $decodedArguments = ConvertFrom-Json $json
+    $CodexArguments = @($decodedArguments)
+}
+# Also cover direct launches from the Windows Terminal profile menu.
+# A shared daemon can have different privileges from this PowerShell process.
+$separator = [Array]::IndexOf($CodexArguments, '--')
+$flags = @($CodexArguments)
+if ($separator -eq 0) { $flags = @() }
+elseif ($separator -gt 0) { $flags = @($CodexArguments[0..($separator - 1)]) }
+if ('--no-daemon' -notin $flags -and -not ($flags | Where-Object { $_ -eq '--remote' -or $_ -like '--remote=*' })) {
+    $CodexArguments = @('--no-daemon') + @($CodexArguments)
 }
 $runtime = Get-Content -LiteralPath "$PSScriptRoot\runtime.json" -Raw | ConvertFrom-Json
 $native = @($runtime.native)

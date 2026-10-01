@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'docs/magik-terminal-hermes-handoff.pdf'
 TITLE = 'Magik Terminal for Codex (By W1d0wm4k3r)'
 REPO = 'https://github.com/imperator-clawdius/magik-terminal'
-VERSION = 'v0.3.0'
+VERSION = 'v0.3.1'
 INK, AMBER, CYAN = [colors.HexColor(v) for v in ('#07070a', '#f0b34a', '#3be0c8')]
 styles = getSampleStyleSheet()
 styles.add(ParagraphStyle('Body', fontName='Helvetica', fontSize=10, leading=14,
@@ -125,7 +125,7 @@ table([['Role', 'Color', 'Use'], ['Ink', '#07070a', 'Primary background'],
 p('palette.json is the project palette. It also contains complementary blue, rose, green, and magenta for syntax and distinguishable diffs. Do not force every Codex UI color into these six values; some surfaces remain native Codex controls.', 'SmallBody')
 
 page('3 / Architecture and source map')
-code('Shell command\n  -> ~/.local/bin/codex.ps1 or codex.cmd\n  -> installed cli.py + runtime.json\n  -> native Codex directly OR Windows Terminal profile\n  -> launch.ps1 -> native Codex\n\nVisual composition\n  Codex syntax theme + Terminal ANSI palette\n  + optional Terminal background image\n  + HLSL frame/flames/rounded panels/Codex mark')
+code('Shell command\n  -> ~/.local/bin/codex.ps1 or codex.cmd\n  -> installed cli.py + runtime.json\n  -> native Codex in the existing terminal tab\n\nTerminal profile menu\n  -> launch.ps1 -> native Codex\n\nVisual composition\n  Codex syntax theme + Terminal ANSI palette\n  + optional Terminal background image\n  + HLSL frame/flames/rounded panels/Codex mark')
 table([
     ['Source path', 'Responsibility'],
     ['install.py / install.ps1', 'Standard-library Python installer and PowerShell entry point. Discovery, validated config edits, file journal, PATH shims, profile installation, rollback/uninstall.'],
@@ -135,25 +135,25 @@ table([
     ['windows/magik.hlsl', 'Windows Terminal compositor shader. t0 terminal surface; t1 Codex mark texture; time/scale/resolution uniforms.'],
     ['palette.json / themes/', 'Brand colors; tmTheme syntax definitions; exported Windows Terminal scheme; standalone Kitty palette.'],
     ['assets/ / docs/', 'Offline wallpaper and logo source/rendered assets, attribution/licenses, real screenshots, README illustration, this PDF.'],
-    ['tests/ / tools/ / .github/', '32 unit/integration tests, real Windows shader compiler check, asset renderer, PDF builder, Windows/Linux validation workflow.'],
+    ['tests/ / tools/ / .github/', '42 unit/integration tests, real Windows shader compiler check, asset renderer, PDF builder, Windows/Linux/macOS validation workflow.'],
 ], [158, 366])
 p('Repository folder: Projects/magik-terminal under the owner\'s home. Blog repository: Projects/b1scu1tk1d. The theme is an integration around Codex and Windows Terminal, not a fork of Codex or a model behavior modification.', 'SmallBody')
 
 page('4 / Launch contract and arguments')
 table([
     ['Command / context', 'Behavior'],
-    ['codex --magik', 'From an interactive ordinary shell: open a themed tab in Terminal window 0, using the stable profile GUID and current working directory.'],
+    ['codex --magik', 'Run native Codex in the current terminal tab. Inherit the working directory, streams, and shell privileges; never spawn a Terminal tab or window.'],
     ['codex --magik --yolo', 'Same visual launch, plus --dangerously-bypass-approvals-and-sandbox forwarded explicitly to native Codex.'],
-    ['Already in the themed profile', 'WT_PROFILE_ID matches the GUID: run native Codex in that tab; do not nest a new tab.'],
+    ['Terminal appearance', 'The current profile controls flames, frame, and wallpaper. The installed Codex syntax theme remains active. The launcher does not switch profiles.'],
     ['Plain codex / batch / redirected I/O', 'Pass through to native Codex. Preserve argument arrays, streams, and exit status. --version and --help do not create a window.'],
     ['--wallpaper on / off / status', 'With --magik or --widowmaker: a settings-only command, exits without creating a model session. Do not combine with a prompt or --yolo.'],
     ['--widowmaker', 'Compatibility alias for --magik, including explicit --yolo.'],
     ['-- argument separator', 'Theme flag parsing stops here so literal prompt flags can be passed through.'],
 ], [184, 340])
 sub('Why renaming cannot break the launcher')
-p('The profile identity is <b>{89a85927-87d9-4b07-922a-3fc6a9f2dc61}</b>. Routing uses that GUID, not the display name. The install directory remains magik-terminal. The internal syntax theme ID remains widowmaker; both checked-in tmTheme files carry the new display title.')
+p('The profile identity is <b>{89a85927-87d9-4b07-922a-3fc6a9f2dc61}</b>. Installation and wallpaper controls use that stable GUID; command launches run in place regardless of profile. The install directory remains magik-terminal. The internal syntax theme ID remains widowmaker; both checked-in tmTheme files carry the display title.')
 sub('How argument forwarding works')
-p('cli.py builds an argument list without a shell. For a new themed tab, it serializes the forwarded list as UTF-8 JSON, Base64-encodes it, and passes it to launch.ps1 as EncodedArguments. PowerShell decodes the array and invokes the native executable with array splatting. runtime.json stores native argv, such as Node plus the installed Codex JavaScript entry point.')
+p('cli.py invokes the native argument list directly without a shell or Terminal handoff. Local interactive Magik sessions add --no-daemon to preserve the launching shell privilege context; explicit --remote connections are preserved. launch.ps1 remains the profile-menu entry point and accepts legacy Base64 JSON argument arrays with lossless PowerShell array forwarding. runtime.json stores native argv, such as Node plus the installed Codex JavaScript entry point.')
 p('The wrapper waits for its child and tolerates Ctrl+C while the child handles the shared console event. Child exit codes propagate. YOLO is never turned on by a theme default, wallpaper command, or rename.')
 code('codex --magik\ncodex --magik --yolo\ncodex --magik resume --last\ncodex --magik --wallpaper on\ncodex --magik --wallpaper off\ncodex --magik --wallpaper status')
 
@@ -208,7 +208,7 @@ table([
 
 page('8 / Verification and publishing')
 sub('Checks performed on the foundation')
-p('The 32-test suite covers argument preservation and Unicode quoting, plain/batch passthrough, themed launch routing, explicit YOLO, alias and -- boundary, in-profile reuse, TOML preservation, JSONC strings, repeat installs, rollback, uninstall, saved wallpaper state, settings-only subprocess behavior, and palette contrast. It also exercises a mocked full installation and upgrade. Real Windows compilation validates both animated and still ps_4_0 shader variants.')
+p('The 42-test suite covers argument preservation and Unicode quoting, plain/batch passthrough, current-tab launching, explicit YOLO, alias and -- boundary, child exit codes and Ctrl+C waiting, shell privilege context, explicit remote connections, PowerShell argument forwarding, TOML preservation, JSONC strings, repeat installs, rollback, uninstall, saved wallpaper state, settings-only subprocess behavior, and palette contrast. It also exercises a mocked full installation and upgrade. Real Windows compilation validates both animated and still ps_4_0 shader variants.')
 code('python -m unittest discover -s tests -v\npython tools/check-shader.py\n\n# Smoke checks; these exit without starting a chat:\ncodex --magik --version\ncodex --magik --yolo --version\ncodex --magik --wallpaper status')
 p('Actual Terminal windows were inspected for logo placement, prompt clearance, softened corners, flame rails, and wallpaper on/off. Theme CI runs on Windows, Ubuntu, and macOS. Windows compiles HLSL; Ubuntu compiles GLSL; Apple Silicon and Intel macOS validate Ghostty configuration and execute isolated native sessions. A GUI smoke check opens separate Ghostty windows and verifies normal and explicit YOLO argument paths with a harmless sentinel. No claim is made that every GPU, scaling factor, or future Codex UI layout has been tested. The local graphical workstation is Windows; Mac visual acceptance remains a recipient check.')
 sub('Blog integration')

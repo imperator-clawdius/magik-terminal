@@ -1,8 +1,9 @@
-import base64
 import importlib.util
 import json
 from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import Mock, patch
 
 spec = importlib.util.spec_from_file_location('magik_cli', Path(__file__).resolve().parents[1] / 'windows/cli.py')
 cli = importlib.util.module_from_spec(spec)
@@ -14,21 +15,33 @@ class CommandTests(unittest.TestCase):
         args = ['exec', '--json', 'keep "quotes" and ; $variables']
         self.assertEqual(cli.command(args, ['codex.exe']), ['codex.exe'] + args)
 
-    def test_magik_opens_profile_without_yolo(self):
-        cmd = cli.command(['--magik'], ['codex.exe'], cwd='C:/Work Space')
-        self.assertEqual(cmd[0], 'wt.exe')
-        self.assertIn(cli.GUID, cmd)
-        self.assertIn('C:/Work Space', cmd)
-        self.assertEqual(json.loads(base64.b64decode(cmd[-1])), [])
+    def test_magik_runs_in_current_terminal_without_yolo(self):
+        self.assertEqual(cli.command(['--magik'], ['codex.exe']),
+                         ['codex.exe', '--no-daemon'])
 
-    def test_yolo_is_explicit_and_payload_is_lossless(self):
+    def test_yolo_is_explicit_and_arguments_are_lossless(self):
         prompt = 'Unicode café; "quotes" $PATH & other text'
         cmd = cli.command(['--magik', '--yolo', prompt], ['codex.exe'])
-        self.assertEqual(json.loads(base64.b64decode(cmd[-1])), ['--dangerously-bypass-approvals-and-sandbox', prompt])
+        self.assertEqual(cmd, ['codex.exe', '--no-daemon', '--dangerously-bypass-approvals-and-sandbox', prompt])
 
-    def test_inside_magik_does_not_spawn_nested_tab(self):
-        self.assertEqual(cli.command(['--magik', '--yolo'], ['codex.exe'], profile_id=cli.GUID),
-                         ['codex.exe', '--dangerously-bypass-approvals-and-sandbox'])
+    def test_native_runtime_prefix_and_resume_are_preserved(self):
+        native = ['C:/Program Files/nodejs/node.exe', 'C:/Codex/bin/codex.js']
+        self.assertEqual(cli.command(['--magik', 'resume', '--last'], native),
+                         native + ['--no-daemon', 'resume', '--last'])
+
+    def test_explicit_remote_connection_is_preserved(self):
+        for args in [['--remote', 'ws://localhost:9000'], ['--remote=ws://localhost:9000']]:
+            cmd = cli.command(['--magik'] + args, ['codex.exe'])
+            self.assertEqual(cmd, ['codex.exe'] + args)
+
+    def test_no_daemon_is_not_duplicated(self):
+        cmd = cli.command(['--magik', '--no-daemon'], ['codex.exe'])
+        self.assertEqual(cmd, ['codex.exe', '--no-daemon'])
+
+    def test_literal_flags_do_not_change_daemon_selection(self):
+        args = ['--', '--remote', '--no-daemon']
+        cmd = cli.command(['--magik'] + args, ['codex.exe'])
+        self.assertEqual(cmd, ['codex.exe', '--no-daemon'] + args)
 
     def test_automation_and_redirected_streams_never_spawn_window(self):
         for args in [['--magik', '--version'], ['--magik', 'exec', '--json', 'hi']]:
@@ -42,6 +55,30 @@ class CommandTests(unittest.TestCase):
         self.assertEqual(cli.parse_args(['--widowmaker']), (True, []))
         self.assertEqual(cli.parse_args(['--widowmaker', '--yolo']),
                          (True, ['--dangerously-bypass-approvals-and-sandbox']))
+
+
+class ProcessTests(unittest.TestCase):
+    def run_launcher(self, waits):
+        with tempfile.TemporaryDirectory(prefix='magik-cli-') as directory:
+            root = Path(directory)
+            (root / 'runtime.json').write_text(json.dumps({'native': ['codex.exe']}))
+            child = Mock()
+            child.wait.side_effect = waits
+            with patch.object(cli, 'ROOT', root), \
+                 patch.object(cli.sys, 'argv', ['codex', '--magik', 'resume', '--last']), \
+                 patch.object(cli.sys.stdin, 'isatty', return_value=True), \
+                 patch.object(cli.sys.stdout, 'isatty', return_value=True), \
+                 patch.object(cli.subprocess, 'Popen', return_value=child) as spawn:
+                result = cli.main()
+            # No shell, detached console, stream redirection, cwd, or env override.
+            spawn.assert_called_once_with(['codex.exe', '--no-daemon', 'resume', '--last'])
+            return result, child.wait.call_count
+
+    def test_launch_inherits_console_and_returns_native_exit_code(self):
+        self.assertEqual(self.run_launcher([23]), (23, 1))
+
+    def test_ctrl_c_waits_for_attached_child(self):
+        self.assertEqual(self.run_launcher([KeyboardInterrupt(), 130]), (130, 2))
 
 
 if __name__ == '__main__':
