@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest, macos-15-intel]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -25,9 +25,13 @@ jobs:
       - name: Install Ghostty
         if: runner.os == 'macOS'
         run: |
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask --no-quarantine ghostty
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask ghostty
           codesign --verify --deep --strict /Applications/Ghostty.app
-      - name: Check real macOS instance
+      - name: Check macOS config and native session
         if: runner.os == 'macOS'
+        timeout-minutes: 3
+        run: python -u tools/smoke-macos.py --config-only
+      - name: Check separate Mac GUI instance
+        if: matrix.os == 'macos-15-intel'
         timeout-minutes: 3
         run: python -u tools/smoke-macos.py
