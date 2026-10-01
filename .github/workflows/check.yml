@@ -25,7 +25,8 @@ jobs:
       - name: Install Ghostty
         if: runner.os == 'macOS'
         run: |
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask ghostty
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask --no-quarantine ghostty
+          codesign --verify --deep --strict /Applications/Ghostty.app
       - name: Check real macOS instance
         if: runner.os == 'macOS'
         timeout-minutes: 3
