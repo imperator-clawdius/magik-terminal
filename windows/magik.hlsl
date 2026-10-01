@@ -1,4 +1,4 @@
-// W1d0wm4k3r CLI Theme. Original shader, MIT license.
+// Magik Terminal for Codex (By W1d0wm4k3r). Original shader, MIT license.
 // Windows Terminal's documented pixel shader interface.
 Texture2D shaderTexture : register(t0);
 Texture2D codexMark : register(t1);

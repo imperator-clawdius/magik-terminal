@@ -8,7 +8,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 GUID = '{89a85927-87d9-4b07-922a-3fc6a9f2dc61}'
-TITLE = 'W1d0wm4k3r CLI Theme'
+TITLE = 'Magik Terminal for Codex (By W1d0wm4k3r)'
 BATCH = {'exec', 'e', 'review', 'login', 'logout', 'mcp', 'mcp-server', 'plugin',
          'app-server', 'remote-control', 'app', 'completion', 'update', 'doctor',
          'sandbox', 'debug', 'apply', 'a', 'queue', 'archive', 'delete',
@@ -62,7 +62,7 @@ def main():
             except KeyboardInterrupt:
                 continue
     except OSError as error:
-        print(f'W1d0wm4k3r could not launch Codex: {error}', file=sys.stderr)
+        print(f'Magik Terminal could not launch Codex: {error}', file=sys.stderr)
         return 1
 
 

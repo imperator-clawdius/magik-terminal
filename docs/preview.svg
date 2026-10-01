@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
-<title id="title">W1d0wm4k3r CLI Theme</title><desc id="desc">Design illustration of an ink-black terminal with amber and turquoise pixel flames, cyber frames, and cream code.</desc>
+<title id="title">Magik Terminal for Codex (By W1d0wm4k3r)</title><desc id="desc">Design illustration of an ink-black terminal with amber and turquoise pixel flames, cyber frames, and cream code.</desc>
 <defs>
   <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#3be0c8" stroke-opacity=".055"/></pattern>
   <linearGradient id="fire" x2="0" y2="1"><stop stop-color="#f0b34a" stop-opacity=".04"/><stop offset="1" stop-color="#f0b34a" stop-opacity=".8"/></linearGradient>
@@ -22,7 +22,7 @@
 <text x="147" y="329" font-size="16" fill="#f0b34a">&gt;<tspan fill="#f2efe6"> Build something worth finding.</tspan></text>
 <text x="147" y="383" font-size="15" fill="#8b8896">// Your code. Your palette.</text>
 <text x="147" y="415" font-size="17" fill="#f0b34a">const <tspan fill="#f2efe6">signal = {</tspan></text>
-<text x="172" y="447" font-size="17" fill="#f2efe6">name: <tspan fill="#3be0c8">"W1d0wm4k3r CLI Theme"</tspan>,</text>
+<text x="172" y="447" font-size="17" fill="#f2efe6">name: <tspan fill="#3be0c8">"Magik Terminal for Codex (By W1d0wm4k3r)"</tspan>,</text>
 <text x="172" y="479" font-size="17" fill="#f2efe6">mode: <tspan fill="#3be0c8">"make it yours"</tspan></text>
 <text x="147" y="511" font-size="17" fill="#f2efe6">};</text>
 <rect x="148" y="551" width="132" height="30" rx="3" fill="#19160f" stroke="#f0b34a" stroke-opacity=".3"/>

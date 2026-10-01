@@ -1,4 +1,4 @@
-# W1d0wm4k3r CLI Theme
+# Magik Terminal for Codex (By W1d0wm4k3r)
 
 **Amber fire. Cyan signal. Your Codex, after dark.**
 
@@ -6,17 +6,20 @@ A free, MIT-licensed visual upgrade for Codex CLI, using the exact palette from
 [B1SCU1TK1D](https://b1scu1tk1d.com/#magik-terminal): ink black, warm cream,
 amber `#f0b34a`, and turquoise `#3be0c8`.
 
-![W1d0wm4k3r CLI Theme with the blog wallpaper](docs/wallpaper-on.png)
+![Magik Terminal for Codex (By W1d0wm4k3r) with the blog wallpaper](docs/wallpaper-on.png)
 
 ## Download
 
-[Download W1d0wm4k3r CLI Theme](https://github.com/imperator-clawdius/magik-terminal/releases/latest/download/w1d0wm4k3r-cli-theme.zip)
+[Download Magik Terminal for Codex (By W1d0wm4k3r)](https://github.com/imperator-clawdius/magik-terminal/releases/latest/download/magik-terminal.zip)
 or browse the [releases](https://github.com/imperator-clawdius/magik-terminal/releases).
 The ZIP includes the installer, source, theme, shader, original pixel-art wallpaper (SVG + PNG), and license files.
 
-Previously released as Magik Terminal. The existing repository, `codex --magik` command,
-and installation directory remain compatible; the theme and terminal profile are now
-named **W1d0wm4k3r CLI Theme**.
+[Download the separate macOS package](https://github.com/imperator-clawdius/magik-terminal/releases/latest/download/magik-terminal-macos.zip)
+or [read the Hermes agent handoff PDF](docs/magik-terminal-hermes-handoff.pdf).
+
+The name is **Magik Terminal for Codex (By W1d0wm4k3r)**. The repository,
+`codex --magik` command, installation directory, and internal `widowmaker` theme ID
+remain compatible with previous releases. The older download filename also remains available.
 
 ## Windows setup
 
@@ -47,7 +50,7 @@ sandbox. It is never enabled by the theme on its own.
 Plain `codex` and automation commands pass through to your original Codex
 installation, preserving arguments, streams, and exit codes. When already in a
 themed tab, the command stays in that tab. Extra arguments such as `resume --last`
-are forwarded. You can also select **W1d0wm4k3r CLI Theme** from the Terminal menu.
+are forwarded. You can also select **Magik Terminal for Codex (By W1d0wm4k3r)** from the Terminal menu.
 
 To make every new Windows Terminal window launch the theme, re-run:
 
@@ -75,6 +78,7 @@ The installer does not change machine or user execution policy.
 - The original blog pixel landscape, with a persistent on/off control.
 - A quiet center: the shader masks text and keeps effects at the edges.
 - A standalone Kitty color palette for macOS/Linux.
+- A separate macOS instance using Ghostty, with a GLSL port of the animated visuals.
 
 Codex's own interface layout and some UI colors remain controlled by Codex.
 This is an independent theme/terminal integration, not an OpenAI product or a
@@ -151,7 +155,49 @@ it contains backups of your local configuration. No backups leave your machine.
 Use `python install.py --terminal-settings PATH` for a portable/custom Terminal install.
 Use `--codex-executable PATH` for a native Codex executable in a custom location.
 
-## Kitty and other terminals
+## macOS setup (separate Ghostty instance)
+
+Install [Ghostty](https://ghostty.org/download), Python 3.11+, and a signed-in
+Codex CLI with theme support. Requires Ghostty 1.2+ for background images; use a
+current release. Use native Ghostty/Python/Codex builds for Apple Silicon or Intel.
+The theme itself contains no architecture-specific Mac binaries.
+
+Extract `magik-terminal-macos.zip`, open a shell in that folder, then run:
+
+```sh
+sh install-macos.sh
+# Open a new shell after installing:
+codex --magik
+codex --magik --yolo
+```
+
+The wrapper starts a **separate Ghostty application instance** with its own config
+under `$CODEX_HOME/magik-terminal-macos/`. Your ordinary Ghostty configuration is
+not changed. A GLSL shader provides flames, frame, rounded panels, and the small
+Codex mark; the logo is embedded as dot data because Ghostty exposes one input texture.
+Retina sizing follows cursor-cell height; exact geometry can differ from Windows.
+
+The installer adds a backed-up PATH block to `~/.zshrc` and `~/.bash_profile`
+and an executable `~/.local/bin/codex` shim. Pass `--no-shell-hook` to manage PATH
+yourself. Set `--ghostty-app /path/to/Ghostty.app` or `--codex-executable /real/codex`
+for custom installations. Existing conflicting shims are not overwritten.
+
+```sh
+codex --magik --wallpaper on
+codex --magik --wallpaper off
+codex --magik --wallpaper status
+sh install-macos.sh --no-motion
+sh install-macos.sh --motion
+sh install-macos.sh --uninstall
+```
+
+Reopen the Magik window after changing wallpaper on Mac. Wallpaper and motion
+choices survive Mac upgrades. The installer validates the generated config using
+Ghostty itself. CI exercises isolated installs, launch arguments, and real Ghostty
+sessions with a harmless command sentinel; native rendering still needs visual
+acceptance on the recipient's Mac, particularly Retina/external-display sizing.
+
+### Kitty / palette-only integration
 
 ```sh
 python3 install.py --theme-only

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import re
 
-TITLE = 'W1d0wm4k3r CLI Theme'
+TITLE = 'Magik Terminal for Codex (By W1d0wm4k3r)'
 GUID = '{89a85927-87d9-4b07-922a-3fc6a9f2dc61}'
 WALLPAPER_OPACITY = 0.10
 
@@ -74,7 +74,7 @@ def set_wallpaper(root, mode):
     items = profiles if isinstance(profiles, list) else profiles.get('list', [])
     profile = next((p for p in items if p.get('guid', '').lower() == GUID), None)
     if profile is None:
-        raise ValueError('W1d0wm4k3r profile is missing. Reinstall the theme.')
+        raise ValueError('Magik Terminal profile is missing. Reinstall the theme.')
     if mode == 'status':
         return bool(profile.get('backgroundImage') and profile.get('backgroundImageOpacity', 1) > 0)
     if mode not in ('on', 'off'):

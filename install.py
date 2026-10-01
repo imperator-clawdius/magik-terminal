@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""W1d0wm4k3r CLI Theme installer. Python 3.11+, standard library only."""
+"""Magik Terminal for Codex (By W1d0wm4k3r) installer. Python 3.11+, standard library only."""
 import argparse
 import base64
 import hashlib
@@ -28,7 +28,7 @@ def theme_config(text, replace_welcome=False):
     if start is None:
         # Avoid silently corrupting inline/dotted TUI tables.
         if 'tui' in before:
-            raise ValueError('Use a [tui] table in config.toml before installing W1d0wm4k3r.')
+            raise ValueError('Use a [tui] table in config.toml before installing Magik Terminal.')
         result = text.rstrip() + '\n\n[tui]\ntheme = "widowmaker"\n'
     else:
         end = next((i for i in range(start+1, len(lines))
@@ -125,7 +125,7 @@ def terminal_config(text, destination, p, no_motion=False, default_profile=False
     items = profiles.setdefault('list', [])
     existing = next((x for x in items if x.get('guid') == GUID), None)
     if any(x.get('name') == TITLE and x.get('guid') != GUID for x in items):
-        raise ValueError('An unrelated W1d0wm4k3r CLI Theme profile already exists')
+        raise ValueError('An unrelated Magik Terminal for Codex (By W1d0wm4k3r) profile already exists')
     profile = {
         'guid': GUID, 'name': TITLE, 'hidden': False,
         'commandline': f'powershell.exe -NoLogo -NoExit -File "{destination / "launch.ps1"}"',
@@ -196,7 +196,7 @@ def apply_changes(changes, state_path):
 
 def uninstall(state_path):
     if not state_path.exists():
-        print('No W1d0wm4k3r installation record found.')
+        print('No Magik Terminal installation record found.')
         return 0
     state = json.loads(state_path.read_text())
     if state.get('path_added') and sys.platform == 'win32':
@@ -219,7 +219,7 @@ def uninstall(state_path):
         print('Partial uninstall: resolve the listed modified files using the saved originals.')
         return 2
     state_path.unlink()
-    print('W1d0wm4k3r removed. Original files restored. Restart your terminal.')
+    print('Magik Terminal removed. Original files restored. Restart your terminal.')
     return 0
 
 
@@ -282,7 +282,7 @@ def main():
     parser.add_argument('--uninstall', action='store_true')
     parser.add_argument('--theme-only', action='store_true', help='Only install the Codex syntax theme')
     parser.add_argument('--no-shell-hook', action='store_true', help=argparse.SUPPRESS)
-    parser.add_argument('--default-profile', action='store_true', help='Make W1d0wm4k3r the default Windows Terminal profile')
+    parser.add_argument('--default-profile', action='store_true', help='Make Magik Terminal the default Windows Terminal profile')
     parser.add_argument('--codex-executable', help='Path to native codex.exe, for custom installations')
     parser.add_argument('--terminal-settings', type=Path, help='Explicit Windows Terminal settings.json')
     args = parser.parse_args()
@@ -326,7 +326,7 @@ def main():
         shim_dir = Path.home() / '.local/bin'
         escaped_python = sys.executable.replace("'", "''")
         escaped_cli = str(destination / 'cli.py').replace("'", "''")
-        ps = f'''# W1d0wm4k3r CLI Theme command shim. Native Codex remains unchanged.
+        ps = f'''# Magik Terminal for Codex (By W1d0wm4k3r) command shim. Native Codex remains unchanged.
 if ($MyInvocation.ExpectingInput) {{
     $input | & '{escaped_python}' '{escaped_cli}' @args
 }} else {{
@@ -334,7 +334,7 @@ if ($MyInvocation.ExpectingInput) {{
 }}
 exit $LASTEXITCODE
 '''
-        cmd = f'@echo off\r\n@rem W1d0wm4k3r CLI Theme command shim\r\n"{sys.executable}" "{destination / "cli.py"}" %*\r\nexit /b %errorlevel%\r\n'
+        cmd = f'@echo off\r\n@rem Magik Terminal for Codex (By W1d0wm4k3r) command shim\r\n"{sys.executable}" "{destination / "cli.py"}" %*\r\nexit /b %errorlevel%\r\n'
         recorded_files = json.loads(state_path.read_text())['files'] if state_path.exists() else {}
         for name, content in [('codex.ps1', ps), ('codex.cmd', cmd)]:
             path = shim_dir / name

@@ -8,4 +8,4 @@ if ($Uninstall) { $options += '--uninstall' }
 if ($DefaultProfile) { $options += '--default-profile' }
 if ($Wallpaper) { $options += '--wallpaper', $Wallpaper }
 & $python.Source "$PSScriptRoot\install.py" @options
-if ($LASTEXITCODE -ne 0) { throw "W1d0wm4k3r installer exited with code $LASTEXITCODE" }
+if ($LASTEXITCODE -ne 0) { throw "Magik Terminal installer exited with code $LASTEXITCODE" }
