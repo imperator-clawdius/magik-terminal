@@ -1,0 +1,23 @@
+{
+  "name": "Magik Terminal",
+  "background": "#07070a",
+  "foreground": "#f2efe6",
+  "cursorColor": "#f0b34a",
+  "selectionBackground": "#29443e",
+  "black": "#0d0d12",
+  "red": "#ffa2ae",
+  "green": "#3be0c8",
+  "yellow": "#f0b34a",
+  "blue": "#77d4ff",
+  "purple": "#f2a9ff",
+  "cyan": "#3be0c8",
+  "white": "#f2efe6",
+  "brightBlack": "#8b8896",
+  "brightRed": "#ffa2ae",
+  "brightGreen": "#5ee9b5",
+  "brightYellow": "#f8d596",
+  "brightBlue": "#77d4ff",
+  "brightPurple": "#f2a9ff",
+  "brightCyan": "#9bf3e4",
+  "brightWhite": "#ffffff"
+}

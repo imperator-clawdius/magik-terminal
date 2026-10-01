@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+<title id="title">Magik Terminal</title><desc id="desc">Design illustration of an ink-black terminal with amber and turquoise pixel flames, cyber frames, and cream code.</desc>
+<defs>
+  <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#3be0c8" stroke-opacity=".055"/></pattern>
+  <linearGradient id="fire" x2="0" y2="1"><stop stop-color="#f0b34a" stop-opacity=".04"/><stop offset="1" stop-color="#f0b34a" stop-opacity=".8"/></linearGradient>
+  <linearGradient id="ice" x2="0" y2="1"><stop stop-color="#3be0c8" stop-opacity=".04"/><stop offset="1" stop-color="#3be0c8" stop-opacity=".65"/></linearGradient>
+</defs>
+<rect width="1200" height="680" rx="16" fill="#07070a"/>
+<rect width="1200" height="680" rx="16" fill="url(#grid)"/>
+<path d="M0 52H1200" stroke="#28272d"/>
+<circle cx="27" cy="27" r="4" fill="#f0b34a"/><circle cx="43" cy="27" r="4" fill="#8b8896"/><circle cx="59" cy="27" r="4" fill="#3be0c8"/>
+<g font-family="Consolas, monospace"><text x="86" y="32" fill="#f2efe6" font-size="13">MAGIK TERMINAL</text><text x="975" y="32" fill="#8b8896" font-size="11">B1SCU1TK1D / 01</text></g>
+<path d="M25 650V370h7v-88h7v122h7v-66h7v142h7v-47h7v117h7v100z M87 650V502h7v-91h7v71h7v-128h7v178h7v-61h7v179z" fill="url(#fire)"/>
+<path d="M1175 650V370h-7v-88h-7v122h-7v-66h-7v142h-7v-47h-7v117h-7v100z M1113 650V502h-7v-91h-7v71h-7v-128h-7v178h-7v-61h-7v179z" fill="url(#ice)"/>
+<path d="M20 130V72h58 M1122 72h58v58 M20 568v80h58 M1122 648h58v-80" fill="none" stroke="#3be0c8" stroke-width="2"/>
+<path d="M20 148v400 M1180 148v400" stroke="#f0b34a" stroke-opacity=".28"/>
+<g font-family="Consolas, monospace">
+<text x="147" y="132" font-size="12" letter-spacing="4" fill="#3be0c8">// A NEW SIGNAL</text>
+<text x="143" y="214" font-size="58" font-weight="bold" letter-spacing="-2" fill="#f2efe6">MAGIK<tspan fill="#f0b34a"> TERMINAL</tspan></text>
+<text x="147" y="251" font-size="15" fill="#8b8896">Amber fire. Cyan signal. Your Codex, after dark.</text>
+<path d="M147 283H1035" stroke="#28272d"/>
+<text x="147" y="329" font-size="16" fill="#f0b34a">&gt;<tspan fill="#f2efe6"> Build something worth finding.</tspan></text>
+<text x="147" y="383" font-size="15" fill="#8b8896">// Your code. Your palette.</text>
+<text x="147" y="415" font-size="17" fill="#f0b34a">const <tspan fill="#f2efe6">signal = {</tspan></text>
+<text x="172" y="447" font-size="17" fill="#f2efe6">name: <tspan fill="#3be0c8">"Magik Terminal"</tspan>,</text>
+<text x="172" y="479" font-size="17" fill="#f2efe6">mode: <tspan fill="#3be0c8">"make it yours"</tspan></text>
+<text x="147" y="511" font-size="17" fill="#f2efe6">};</text>
+<rect x="148" y="551" width="132" height="30" rx="3" fill="#19160f" stroke="#f0b34a" stroke-opacity=".3"/>
+<text x="164" y="571" font-size="11" letter-spacing="2" fill="#f0b34a">FREE + OPEN</text>
+<text x="310" y="571" font-size="11" letter-spacing="2" fill="#8b8896">WINDOWS TERMINAL / CODEX CLI</text>
+<text x="147" y="626" font-size="10" letter-spacing="1.5" fill="#8b8896">DESIGN PREVIEW</text><text x="899" y="626" font-size="11" fill="#3be0c8">b1scu1tk1d.com</text>
+</g></svg>
