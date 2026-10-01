@@ -25,15 +25,18 @@ with tempfile.TemporaryDirectory(prefix='magik-ci-') as tmp:
     native.write_text('#!' + sys.executable + '\nimport json, os, sys\nfrom pathlib import Path\n'
                      + 'Path(' + repr(str(result)) + ').write_text(json.dumps({"args":sys.argv[1:],"profile":os.environ.get("MAGIK_PROFILE")}))\n')
     native.chmod(0o755)
-    subprocess.run([sys.executable, str(root / 'macos/install.py'), '--codex-executable', str(native), '--wallpaper', 'on'], env=env, check=True)
+    print('Installing isolated Mac instance...', flush=True)
+    subprocess.run([sys.executable, str(root / 'macos/install.py'), '--codex-executable', str(native), '--wallpaper', 'on'], env=env, check=True, timeout=45)
     installed = home / '.codex/magik-terminal-macos'
     for args in [[], ['--dangerously-bypass-approvals-and-sandbox', 'literal; $HOME "quoted"']]:
         result.unlink(missing_ok=True)
         payload = base64.b64encode(json.dumps(args).encode()).decode()
         initial = shlex.join([sys.executable, str(installed / 'session.py'), payload])
+        print('Starting Ghostty with sentinel args: ' + repr(args), flush=True)
         subprocess.run(['/usr/bin/open', '-na', '/Applications/Ghostty.app', '--args',
                         '--config-default-files=false', '--config-file=' + str(installed / 'ghostty.conf'),
-                        '--initial-command=' + initial], check=True)
+                        '--initial-command=' + initial], check=True, timeout=45)
+        print('LaunchServices returned; waiting for sentinel...', flush=True)
         deadline = time.monotonic() + 30
         while not result.exists() and time.monotonic() < deadline:
             time.sleep(.25)
@@ -42,7 +45,9 @@ with tempfile.TemporaryDirectory(prefix='magik-ci-') as tmp:
         data = json.loads(result.read_text())
         assert data['args'] == args, data
         assert data['profile'] == str(installed), data
-        print('Ghostty native session executed exact argv:', args)
-    subprocess.run([str(home / '.local/bin/codex'), '--magik', '--wallpaper', 'off'], env=env, check=True)
-    subprocess.run([sys.executable, str(root / 'macos/install.py'), '--uninstall'], env=env, check=True)
+        print('Ghostty native session executed exact argv:', args, flush=True)
+    print('Checking wallpaper command...', flush=True)
+    subprocess.run([str(home / '.local/bin/codex'), '--magik', '--wallpaper', 'off'], env=env, check=True, timeout=20)
+    print('Uninstalling isolated instance...', flush=True)
+    subprocess.run([sys.executable, str(root / 'macos/install.py'), '--uninstall'], env=env, check=True, timeout=20)
 print('Real macOS install, Ghostty validation, separate-instance launches, toggle, and uninstall passed.')

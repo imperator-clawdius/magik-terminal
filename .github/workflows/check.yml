@@ -22,7 +22,11 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y glslang-tools
           python tools/check-macos-shader.py
-      - if: runner.os == 'macOS'
+      - name: Install Ghostty
+        if: runner.os == 'macOS'
         run: |
-          brew install --cask ghostty
-          python tools/smoke-macos.py
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask ghostty
+      - name: Check real macOS instance
+        if: runner.os == 'macOS'
+        timeout-minutes: 3
+        run: python -u tools/smoke-macos.py
