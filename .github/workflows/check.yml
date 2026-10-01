@@ -27,6 +27,11 @@ jobs:
         run: |
           HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask ghostty
           codesign --verify --deep --strict /Applications/Ghostty.app
+          # First-open consent cannot be answered on a hosted runner. This is
+          # only the verified official test dependency, never a user's machine.
+          if xattr -p com.apple.quarantine /Applications/Ghostty.app >/dev/null 2>&1; then
+            xattr -dr com.apple.quarantine /Applications/Ghostty.app
+          fi
       - name: Check macOS config and native session
         if: runner.os == 'macOS'
         timeout-minutes: 3

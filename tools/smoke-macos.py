@@ -47,9 +47,16 @@ with tempfile.TemporaryDirectory(prefix='magik-ci-') as tmp:
             subprocess.run([sys.executable, str(installed / 'session.py'), payload], check=True, timeout=15)
         else:
             print('Starting Ghostty with sentinel args: ' + repr(args), flush=True)
-            subprocess.run(['/usr/bin/open', '-na', '/Applications/Ghostty.app', '--args',
-                            '--config-default-files=false', '--config-file=' + str(installed / 'ghostty.conf'),
-                            '--initial-command=' + initial], check=True, timeout=45)
+            try:
+                subprocess.run(['/usr/bin/open', '-na', '/Applications/Ghostty.app', '--args',
+                                '--config-default-files=false', '--config-file=' + str(installed / 'ghostty.conf'),
+                                '--initial-command=' + initial], check=True, timeout=45)
+            except subprocess.TimeoutExpired:
+                sample = home / 'ghostty-sample.txt'
+                subprocess.run(['/usr/bin/sample', 'ghostty', '1', '-file', str(sample)], timeout=10, check=False)
+                if sample.exists():
+                    print(sample.read_text(errors='replace')[:12000], flush=True)
+                raise
             print('LaunchServices returned; waiting for sentinel...', flush=True)
         deadline = time.monotonic() + 30
         while not result.exists() and time.monotonic() < deadline:
