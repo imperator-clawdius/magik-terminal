@@ -17,6 +17,15 @@ root = Path(__file__).resolve().parents[1]
 if sys.platform != 'darwin':
     raise SystemExit('macOS only')
 config_only = '--config-only' in sys.argv
+if not config_only and os.environ.get('GITHUB_ACTIONS') == 'true':
+    # Distinguish an unavailable hosted desktop from a failing Magik launcher.
+    # Never skip an actual Ghostty failure after this system-app probe succeeds.
+    try:
+        subprocess.run(['/usr/bin/open', '-a', '/System/Applications/TextEdit.app'], check=True, timeout=15)
+    except subprocess.TimeoutExpired:
+        print('GUI UNAVAILABLE: even the macOS TextEdit launch timed out. '
+              'Only config/direct-session coverage is available on this runner.', flush=True)
+        raise SystemExit(77)
 with tempfile.TemporaryDirectory(prefix='magik-ci-') as tmp:
     home = Path(tmp).resolve()
     env = os.environ.copy()

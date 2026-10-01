@@ -34,4 +34,12 @@ jobs:
       - name: Check separate Mac GUI instance
         if: matrix.os == 'macos-15-intel'
         timeout-minutes: 3
-        run: python -u tools/smoke-macos.py
+        run: |
+          set +e
+          python -u tools/smoke-macos.py
+          result=$?
+          if [ "$result" -eq 77 ]; then
+            echo "::warning::Hosted macOS cannot open the system TextEdit app. GUI acceptance is explicitly unverified; config and direct-session tests passed."
+            exit 0
+          fi
+          exit "$result"
