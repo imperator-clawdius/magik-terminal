@@ -30,7 +30,7 @@ def command(args, runtime, *, interactive=True, in_profile=False, cwd=None, root
 def wallpaper(root, mode):
     from install_support import apply_changes
     from macos_settings import ghostty_config
-    root = Path(root)
+    root = Path(root).resolve()
     runtime_path = root / 'runtime.json'
     runtime = json.loads(runtime_path.read_text(encoding='utf-8'))
     if mode == 'status':

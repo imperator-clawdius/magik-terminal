@@ -61,7 +61,7 @@ class MacTests(unittest.TestCase):
 
     def test_isolated_install_toggle_upgrade_and_uninstall(self):
         with tempfile.TemporaryDirectory() as tmp:
-            home = Path(tmp) / 'Home Space'
+            home = Path(tmp).resolve() / 'Home Space'
             home.mkdir()
             codex_home = home / '.codex'
             ghostty = home / 'Ghostty.app'
