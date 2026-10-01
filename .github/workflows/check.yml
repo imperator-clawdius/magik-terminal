@@ -37,7 +37,7 @@ jobs:
         timeout-minutes: 3
         run: python -u tools/smoke-macos.py --config-only
       - name: Check separate Mac GUI instance
-        if: matrix.os == 'macos-15-intel'
+        if: runner.os == 'macOS'
         timeout-minutes: 3
         run: |
           set +e

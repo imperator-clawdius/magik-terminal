@@ -161,6 +161,7 @@ Install [Ghostty](https://ghostty.org/download), Python 3.11+, and a signed-in
 Codex CLI with theme support. Requires Ghostty 1.2+ for background images; use a
 current release. Use native Ghostty/Python/Codex builds for Apple Silicon or Intel.
 The theme itself contains no architecture-specific Mac binaries.
+Open Ghostty once after installing it to complete macOS's normal first-open prompt.
 
 Extract `magik-terminal-macos.zip`, open a shell in that folder, then run:
 
@@ -193,9 +194,13 @@ sh install-macos.sh --uninstall
 
 Reopen the Magik window after changing wallpaper on Mac. Wallpaper and motion
 choices survive Mac upgrades. The installer validates the generated config using
-Ghostty itself. CI exercises isolated installs, launch arguments, and real Ghostty
-sessions with a harmless command sentinel; native rendering still needs visual
-acceptance on the recipient's Mac, particularly Retina/external-display sizing.
+Ghostty itself. Apple Silicon and Intel CI validate configuration, isolated
+installs, native command execution, argument forwarding, toggles, and uninstall.
+The GUI smoke test opens separate Ghostty windows and verifies both normal and
+explicit YOLO argument paths with a harmless sentinel. Native visual appearance
+still needs acceptance on the recipient's display, especially Retina/external-display
+sizing. The GUI check reports an explicit skip only if the system TextEdit app
+cannot open; a Ghostty-specific failure still fails the check.
 
 ### Kitty / palette-only integration
 
@@ -224,7 +229,8 @@ Direct3D compiler. No third-party Python packages are needed.
 `python tools/build-macos-shader.py` regenerates the Ghostty GLSL port from the
 Windows shader and logo SVG. With `glslangValidator` available, run
 `python tools/check-macos-shader.py`. CI also validates Ghostty and runs isolated
-Mac sessions through `tools/smoke-macos.py` on a macOS runner.
+native Mac sessions through `tools/smoke-macos.py --config-only` on both Mac
+architectures. Run `python tools/smoke-macos.py` on a Mac desktop for the GUI test.
 
 The shader uses Windows Terminal's experimental pixel-shader API. If a driver or
 Terminal version rejects it, remove `experimental.pixelShaderPath` and
