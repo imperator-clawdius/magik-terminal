@@ -9,10 +9,10 @@ if ($EncodedArguments) {
 }
 $runtime = Get-Content -LiteralPath "$PSScriptRoot\runtime.json" -Raw | ConvertFrom-Json
 $native = @($runtime.native)
-if (-not (Test-Path -LiteralPath $native[0])) { throw 'Codex runtime moved. Reinstall Magik Terminal to refresh it.' }
-$Host.UI.RawUI.WindowTitle = 'Magik Terminal'
+if (-not (Test-Path -LiteralPath $native[0])) { throw 'Codex runtime moved. Reinstall W1d0wm4k3r CLI Theme to refresh it.' }
+$Host.UI.RawUI.WindowTitle = 'W1d0wm4k3r CLI Theme'
 Write-Host ''
-Write-Host '  +-- M A G I K   T E R M I N A L --------------------+' -ForegroundColor Yellow
+Write-Host '  +-- W1d0wm4k3r CLI Theme ---------------------------+' -ForegroundColor Yellow
 Write-Host '  |  B1SCU1TK1D  //  AMBER FIRE. CYAN SIGNAL.         |' -ForegroundColor Cyan
 Write-Host '  +-------------------------------------------------+' -ForegroundColor Yellow
 Write-Host ''

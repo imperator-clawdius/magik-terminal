@@ -1,6 +1,7 @@
-// Magik Terminal. Original shader, MIT license.
+// W1d0wm4k3r CLI Theme. Original shader, MIT license.
 // Windows Terminal's documented pixel shader interface.
 Texture2D shaderTexture : register(t0);
+Texture2D codexMark : register(t1);
 SamplerState samplerState : register(s0);
 cbuffer PixelShaderSettings : register(b0) {
     float Time;
@@ -61,6 +62,21 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD) : SV_TARGET {
     float backgroundMask = 1.0 - smoothstep(0.025, 0.14, distanceFromInk);
     float3 decoration = 0;
 
+    // The native idle blossom occupied about 304 logical pixels at the tested
+    // default font size. Keep it at 25% width/height, centered in the lower-right
+    // quarter. It is a persistent background mark, never painted over glyphs.
+    const float originalMarkSize = 304.0;
+    const float markScale = 0.25;
+    float markSize = min(originalMarkSize * markScale, min(size.x, size.y) * 0.20);
+    float2 markCenter = size * float2(0.75, 0.75);
+    // Reserve the composer/footer on shorter windows so the mark stays whole.
+    markCenter.y = min(markCenter.y, size.y - 112.0 - markSize * 0.5 - 12.0);
+    float2 markUV = (px - markCenter) / markSize + 0.5;
+    if (markCenter.y - markSize * 0.5 >= size.y * 0.5 && all(markUV >= 0.0) && all(markUV <= 1.0)) {
+        float markAlpha = codexMark.Sample(samplerState, markUV).a;
+        decoration += float3(0.16, 0.17, 0.20) * markAlpha;
+    }
+
     // Two amber rails and turquoise HUD corner brackets.
     float verticalRail = 1.0 - smoothstep(0.6, 1.6, abs(edge.x - 7.0));
     float horizontalRail = 1.0 - smoothstep(0.6, 1.6, abs(edge.y - 7.0));
@@ -71,12 +87,16 @@ float4 main(float4 pos : SV_POSITION, float2 uv : TEXCOORD) : SV_TARGET {
 
     // Quantized, rising flames stay within 48 logical pixels of the sides.
     float2 cell = floor(px / 3.0) * 3.0;
-    float flow = noise(float2(cell.y * 0.026 + Time * 0.8, cell.x * 0.04));
-    flow += 0.45 * noise(float2(cell.y * 0.06 + Time * 1.2, cell.x * 0.08));
+    float animationTime = Time;
+    #ifdef W1_STILL
+        animationTime = 0.0;
+    #endif
+    float flow = noise(float2(cell.y * 0.026 + animationTime * 0.8, cell.x * 0.04));
+    flow += 0.45 * noise(float2(cell.y * 0.06 + animationTime * 1.2, cell.x * 0.08));
     float tongue = 8.0 + 32.0 * flow;
     float flame = (1.0 - smoothstep(tongue - 9.0, tongue + 2.0, edge.x));
     flame *= smoothstep(9.0, 20.0, edge.x);
-    flame *= 0.24 + 0.10 * sin(cell.y * 0.03 + Time);
+    flame *= 0.24 + 0.10 * sin(cell.y * 0.03 + animationTime);
     decoration += lerp(amber, cyan, step(0.5, uv.x)) * flame;
 
     // Faint circuit grid in the outer gutter only.

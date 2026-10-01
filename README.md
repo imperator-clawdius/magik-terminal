@@ -1,4 +1,4 @@
-# Magik Terminal
+# W1d0wm4k3r CLI Theme
 
 **Amber fire. Cyan signal. Your Codex, after dark.**
 
@@ -6,13 +6,17 @@ A free, MIT-licensed visual upgrade for Codex CLI, using the exact palette from
 [B1SCU1TK1D](https://b1scu1tk1d.com/#magik-terminal): ink black, warm cream,
 amber `#f0b34a`, and turquoise `#3be0c8`.
 
-![Magik Terminal design preview](docs/preview.svg)
+![W1d0wm4k3r CLI Theme with the blog wallpaper](docs/wallpaper-on.png)
 
 ## Download
 
-[Download Magik Terminal](https://github.com/imperator-clawdius/magik-terminal/releases/latest/download/magik-terminal.zip)
+[Download W1d0wm4k3r CLI Theme](https://github.com/imperator-clawdius/magik-terminal/releases/latest/download/w1d0wm4k3r-cli-theme.zip)
 or browse the [releases](https://github.com/imperator-clawdius/magik-terminal/releases).
-The ZIP includes the installer, source, theme, shader, and license.
+The ZIP includes the installer, source, theme, shader, original pixel-art wallpaper (SVG + PNG), and license files.
+
+Previously released as Magik Terminal. The existing repository, `codex --magik` command,
+and installation directory remain compatible; the theme and terminal profile are now
+named **W1d0wm4k3r CLI Theme**.
 
 ## Windows setup
 
@@ -42,10 +46,10 @@ sandbox. It is never enabled by the theme on its own.
 
 Plain `codex` and automation commands pass through to your original Codex
 installation, preserving arguments, streams, and exit codes. When already in a
-Magik tab, the command stays in that tab. Extra arguments such as `resume --last`
-are forwarded. You can also select **Magik Terminal** from the Terminal menu.
+themed tab, the command stays in that tab. Extra arguments such as `resume --last`
+are forwarded. You can also select **W1d0wm4k3r CLI Theme** from the Terminal menu.
 
-To make every new Windows Terminal window launch Magik, re-run:
+To make every new Windows Terminal window launch the theme, re-run:
 
 ```powershell
 .\install.ps1 -DefaultProfile
@@ -64,9 +68,11 @@ The installer does not change machine or user execution policy.
 
 - Animated digital flames in the side gutters, amber on the left and turquoise on the right.
 - HUD corner brackets, circuit lines, and a branded tab and startup banner.
+- A persistent Codex blossom in the bottom-right quarter, at 25% of its original width and height.
 - Softer prompt/message-panel corners, composited without altering text or input.
-- A persistent `magik` Codex syntax theme for code, headings, and diffs.
+- A persistent `widowmaker` Codex syntax theme for code, headings, and diffs.
 - A matching terminal ANSI palette, with distinct added/deleted diff colors.
+- The original blog pixel landscape, with a persistent on/off control.
 - A quiet center: the shader masks text and keeps effects at the edges.
 - A standalone Kitty color palette for macOS/Linux.
 
@@ -76,25 +82,65 @@ fork of Codex. It does not change models, authentication, permissions, tools,
 or the content of your prompts. It does not make the model generate colored
 text; the terminal and syntax theme provide the colors.
 
+The full install sets `tui.animations = false` so the large native welcome logo
+does not appear behind the small persistent mark. This also disables native
+shimmer/spinner motion; the theme shader supplies the flame animation. This
+setting is backed up and restored on uninstall. Theme-only installs leave it alone.
+
+The small mark stays visible with wallpaper on or off. On small windows it scales
+down and moves above the prompt; very short windows hide it to keep input clear.
+Reopen existing Codex sessions after upgrading to remove the old centered logo.
+
+## Optional pixel-art wallpaper
+
+The package includes the exact landscape from [B1SCU1TK1D](https://b1scu1tk1d.com).
+The wallpaper is **off by default on a first installation**. Turn it on or off at
+any time from a shell, without starting another Codex chat:
+
+```powershell
+codex --magik --wallpaper on
+codex --magik --wallpaper off
+codex --magik --wallpaper status
+```
+
+`--widowmaker` is also accepted in place of `--magik`, including with `--yolo`.
+The setting is saved, survives restarts and reinstalls, and updates open themed
+tabs when Windows Terminal reloads its settings. Then launch with `codex --magik`.
+Do not combine a wallpaper settings command with a prompt or `--yolo`.
+
+To enable it during installation, use `.\install.ps1 -Wallpaper on`.
+Still mode and wallpaper are independent: `-NoMotion -Wallpaper on` gives you
+a static wallpaper, frame, and Codex mark without the shader animation. No internet connection is
+needed for the bundled wallpaper after download.
+
+The image is blended at 10% opacity over ink black. The normal theme text colors
+retain at least 4.5:1 contrast against even the brightest possible wallpaper
+pixel; cream text exceeds 13:1. Solid prompt backgrounds, selection colors,
+and Codex's own dimmed UI text remain controlled by the terminal/Codex.
+
+| Wallpaper on | Wallpaper off |
+| --- | --- |
+| ![Pixel landscape enabled](docs/wallpaper-on.png) | ![Solid ink background](docs/wallpaper-off.png) |
+
 ## Still mode / uninstall
 
-Re-run the installer with `-NoMotion` to disable the animated shader:
+Re-run the installer with `-NoMotion` to freeze decorative animation:
 
 ```powershell
 .\install.ps1 -NoMotion
 .\install.ps1 -Uninstall
 ```
 
-The Codex colors remain in still mode; the shader flames and frame are disabled.
+Still mode keeps the frame, frozen flames, optional wallpaper, and small Codex mark.
 Uninstall restores byte-for-byte originals when installed files have not been
 edited afterward. If you changed a file after installation, it is retained and
 reported, with its original available in the backup record for manual recovery.
-Close/reopen PowerShell after uninstall to unload the functions.
+Close/reopen PowerShell after uninstall to refresh command discovery.
 
 ## Files changed
 
-- `$CODEX_HOME/config.toml` (only `tui.theme`), defaulting to `~/.codex`.
-- `$CODEX_HOME/themes/magik.tmTheme` and `$CODEX_HOME/magik-terminal/`.
+- `$CODEX_HOME/config.toml` (`tui.theme` and, for the full install, `tui.animations`), defaulting to `~/.codex`.
+- `$CODEX_HOME/themes/widowmaker.tmTheme` and `$CODEX_HOME/magik-terminal/`.
 - `~/.local/bin/codex.ps1` and `codex.cmd`, plus user PATH if needed.
 - Windows Terminal `settings.json`, adding one profile and one color scheme.
 
@@ -125,12 +171,17 @@ On Windows, `python tools/check-shader.py` compiles the shader with the system's
 Direct3D compiler. No third-party Python packages are needed.
 
 The shader uses Windows Terminal's experimental pixel-shader API. If a driver or
-Terminal version rejects it, install with `-NoMotion`. Animation uses GPU power;
-still mode is also useful on battery.
+Terminal version rejects it, remove `experimental.pixelShaderPath` and
+`experimental.pixelShaderImagePath` from the theme profile to keep the color
+scheme and optional wallpaper. `-NoMotion` freezes animation but still uses
+the shader for the frame, rounded panels, and persistent mark.
 
 References: [Codex CLI customization](https://learn.chatgpt.com/docs/cli-customization),
 [Windows Terminal shaders](https://learn.microsoft.com/en-us/windows/terminal/customize-settings/profile-appearance#pixel-shader-effects).
 
 ## License
 
-MIT. Free to use, modify, and share. Built for the B1SCU1TK1D universe.
+Theme code and blog wallpaper: MIT. Free to use, modify, and share.
+The Codex blossom asset is derived from Apache-2.0-licensed OpenAI Codex source;
+see `assets/CODEX-LICENSE.txt` and `assets/README.md`. OpenAI marks remain their
+property. Built for the B1SCU1TK1D universe, independently of OpenAI.

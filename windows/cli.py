@@ -8,6 +8,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 GUID = '{89a85927-87d9-4b07-922a-3fc6a9f2dc61}'
+TITLE = 'W1d0wm4k3r CLI Theme'
 BATCH = {'exec', 'e', 'review', 'login', 'logout', 'mcp', 'mcp-server', 'plugin',
          'app-server', 'remote-control', 'app', 'completion', 'update', 'doctor',
          'sandbox', 'debug', 'apply', 'a', 'queue', 'archive', 'delete',
@@ -18,8 +19,8 @@ def parse_args(args):
     # -- terminates our flag parsing too, so literal prompt text is untouched.
     split = args.index('--') if '--' in args else len(args)
     flags, tail = args[:split], args[split:]
-    magik = '--magik' in flags
-    flags = [arg for arg in flags if arg != '--magik']
+    magik = any(arg in ('--magik', '--widowmaker') for arg in flags)
+    flags = [arg for arg in flags if arg not in ('--magik', '--widowmaker')]
     if magik:
         flags = ['--dangerously-bypass-approvals-and-sandbox' if arg == '--yolo' else arg for arg in flags]
     return magik, flags + tail
@@ -31,12 +32,22 @@ def command(args, native, *, profile_id='', interactive=True, cwd=None, root=ROO
     if not magik or batch or profile_id.lower() == GUID:
         return native + forwarded
     payload = base64.b64encode(json.dumps(forwarded, ensure_ascii=False).encode()).decode()
-    return ['wt.exe', '-w', '0', 'new-tab', '-p', 'Magik Terminal', '-d', cwd or os.getcwd(),
+    return ['wt.exe', '-w', '0', 'new-tab', '-p', GUID, '-d', cwd or os.getcwd(),
             'powershell.exe', '-NoLogo', '-NoExit', '-File', str(root / 'launch.ps1'),
             '-EncodedArguments', payload]
 
 
 def main():
+    from theme_settings import wallpaper_action, set_wallpaper
+    try:
+        mode = wallpaper_action(sys.argv[1:])
+        if mode:
+            enabled = set_wallpaper(ROOT, mode)
+            print(TITLE + ' wallpaper: ' + ('on' if enabled else 'off') + '. Saved for future launches.')
+            return 0
+    except (ValueError, KeyError, OSError) as error:
+        print(f'Wallpaper settings failed: {error}', file=sys.stderr)
+        return 1
     config = json.loads((ROOT / 'runtime.json').read_text(encoding='utf-8'))
     invocation = command(sys.argv[1:], config['native'],
         profile_id=os.environ.get('WT_PROFILE_ID', ''),
@@ -51,7 +62,7 @@ def main():
             except KeyboardInterrupt:
                 continue
     except OSError as error:
-        print(f'Magik could not launch Codex: {error}', file=sys.stderr)
+        print(f'W1d0wm4k3r could not launch Codex: {error}', file=sys.stderr)
         return 1
 
 

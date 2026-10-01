@@ -14,12 +14,21 @@ class InstallerTests(unittest.TestCase):
         original = '# user comment\nmodel="example"\n[tui]\nnotifications=false\n[tui.other]\nx=1\n[projects."C:/work"]\ntrust_level="trusted"\n'
         result = install.theme_config(original)
         self.assertIn('# user comment', result)
-        self.assertEqual(tomllib.loads(result)['tui'], {'theme': 'magik', 'notifications': False, 'other': {'x': 1}})
+        self.assertEqual(tomllib.loads(result)['tui'], {'theme': 'widowmaker', 'notifications': False, 'other': {'x': 1}})
         self.assertEqual(install.theme_config(result), result)
 
     def test_adds_or_replaces_theme(self):
         for text in ['', 'model="example"\n', '[tui]\ntheme="old"\n']:
-            self.assertEqual(tomllib.loads(install.theme_config(text))['tui']['theme'], 'magik')
+            self.assertEqual(tomllib.loads(install.theme_config(text))['tui']['theme'], 'widowmaker')
+
+    def test_native_welcome_is_replaced_without_runtime_overrides(self):
+        original = '[tui]\nanimations=true\nnotifications=false\n[features]\nexample=true\n'
+        result = install.theme_config(original, replace_welcome=True)
+        data = tomllib.loads(result)
+        self.assertFalse(data['tui']['animations'])
+        self.assertFalse(data['tui']['notifications'])
+        self.assertTrue(data['features']['example'])
+        self.assertEqual(result, install.theme_config(result, replace_welcome=True))
 
     def test_rejects_inline_table_without_writing(self):
         with self.assertRaises(ValueError):
@@ -40,7 +49,8 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(data['actions'], [1])
         self.assertEqual(data['profiles']['defaults']['font']['size'], 16)
         still = json.loads(install.terminal_config(twice, Path('C:/Magik'), palette, True))
-        self.assertNotIn('experimental.pixelShaderPath', still['profiles']['list'][-1])
+        self.assertIn('experimental.pixelShaderPath', still['profiles']['list'][-1])
+        self.assertTrue(still['profiles']['list'][-1]['experimental.pixelShaderImagePath'].endswith('codex-mark.png'))
 
     def test_theme_is_valid_plist(self):
         palette = json.loads((install.ROOT / 'palette.json').read_text())

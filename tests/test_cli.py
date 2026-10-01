@@ -17,7 +17,7 @@ class CommandTests(unittest.TestCase):
     def test_magik_opens_profile_without_yolo(self):
         cmd = cli.command(['--magik'], ['codex.exe'], cwd='C:/Work Space')
         self.assertEqual(cmd[0], 'wt.exe')
-        self.assertIn('Magik Terminal', cmd)
+        self.assertIn(cli.GUID, cmd)
         self.assertIn('C:/Work Space', cmd)
         self.assertEqual(json.loads(base64.b64decode(cmd[-1])), [])
 
@@ -37,6 +37,11 @@ class CommandTests(unittest.TestCase):
 
     def test_double_dash_preserves_literal_prompt_flags(self):
         self.assertEqual(cli.parse_args(['--magik', '--', '--yolo', '--magik']), (True, ['--', '--yolo', '--magik']))
+
+    def test_widowmaker_alias_keeps_yolo_explicit(self):
+        self.assertEqual(cli.parse_args(['--widowmaker']), (True, []))
+        self.assertEqual(cli.parse_args(['--widowmaker', '--yolo']),
+                         (True, ['--dangerously-bypass-approvals-and-sandbox']))
 
 
 if __name__ == '__main__':
