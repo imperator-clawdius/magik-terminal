@@ -17,9 +17,9 @@ root = Path(__file__).resolve().parents[1]
 if sys.platform != 'darwin':
     raise SystemExit('macOS only')
 with tempfile.TemporaryDirectory(prefix='magik-ci-') as tmp:
-    home = Path(tmp)
+    home = Path(tmp).resolve()
     env = os.environ.copy()
-    env.update(HOME=tmp, CODEX_HOME=str(home / '.codex'))
+    env.update(HOME=str(home), CODEX_HOME=str(home / '.codex'))
     native = home / 'native-sentinel'
     result = home / 'result.json'
     native.write_text('#!' + sys.executable + '\nimport json, os, sys\nfrom pathlib import Path\n'

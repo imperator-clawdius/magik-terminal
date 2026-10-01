@@ -209,12 +209,22 @@ launcher do not run in Kitty. Other terminals can import `palette.json` manually
 
 ## Develop
 
+The [Hermes agent handoff](docs/magik-terminal-hermes-handoff.pdf) documents the
+implementation, file map, safeguards, operational commands, and Mac/Windows
+extension points. Its editable source is `tools/build-handoff.py`; regenerate
+with `python tools/build-handoff.py` (development dependency: ReportLab).
+
 ```sh
 python -m unittest discover -s tests -v
 ```
 
 On Windows, `python tools/check-shader.py` compiles the shader with the system's
 Direct3D compiler. No third-party Python packages are needed.
+
+`python tools/build-macos-shader.py` regenerates the Ghostty GLSL port from the
+Windows shader and logo SVG. With `glslangValidator` available, run
+`python tools/check-macos-shader.py`. CI also validates Ghostty and runs isolated
+Mac sessions through `tools/smoke-macos.py` on a macOS runner.
 
 The shader uses Windows Terminal's experimental pixel-shader API. If a driver or
 Terminal version rejects it, remove `experimental.pixelShaderPath` and
